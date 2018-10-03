@@ -18,6 +18,10 @@ public class UserMealWithExceed {
         this.exceed = exceed;
     }
 
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
+
     @Override
     public String toString() {
         return "UserMealWithExceed{" +
