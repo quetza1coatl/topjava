@@ -10,6 +10,7 @@ public class Meal {
     private final String description;
 
     private final int calories;
+    private int id;
 
     public Meal(LocalDateTime dateTime, String description, int calories) {
         this.dateTime = dateTime;
@@ -29,11 +30,29 @@ public class Meal {
         return calories;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public LocalDate getDate() {
         return dateTime.toLocalDate();
     }
 
     public LocalTime getTime() {
         return dateTime.toLocalTime();
+    }
+
+    @Override
+    public String toString() {
+        return "Meal{" +
+                "dateTime=" + dateTime +
+                ", description='" + description + '\'' +
+                ", calories=" + calories +
+                ", id=" + id +
+                '}';
     }
 }
