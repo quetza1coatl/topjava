@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
+import java.time.LocalDate;
 import java.util.List;
+
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
 @Service
@@ -39,5 +41,10 @@ public class MealServiceImpl implements MealService {
     @Override
     public List<Meal> getAll(int userID) {
         return repository.getAll(userID);
+    }
+
+    @Override
+    public List<Meal> getFiltered(int userID, LocalDate fromDate, LocalDate toDate) {
+        return repository.getFiltered(userID, fromDate, toDate);
     }
 }

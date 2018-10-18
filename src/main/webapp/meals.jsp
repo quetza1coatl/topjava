@@ -20,6 +20,40 @@
 <section>
     <h3><a href="index.html">Home</a></h3>
     <h2>Meals</h2>
+    <div>
+        User: ${user}
+    </div>
+    <div>
+
+        <form method="post">
+            <input hidden name="action" value="filter"/>
+            <table>
+                <tr>
+                    <td>From date:</td>
+                    <td>To date:</td>
+                    <td>From time:</td>
+                    <td>To time:</td>
+                </tr>
+                <tr>
+                    <td><input type="date" value="${param.fromDate}" name="fromDate"></td>
+                    <td><input type="date" value="${param.toDate}" name="toDate"></td>
+                    <td><input type="time" value="${param.fromTime}" name="fromTime"></td>
+                    <td><input type="time" value="${param.toTime}" name="toTime"></td>
+                </tr>
+                <tr>
+
+                    <td>
+                        <button type="submit">Filter</button>
+                    </td>
+
+                </tr>
+            </table>
+        </form>
+        <form action="meals">
+            <button type="submit">Clear</button>
+        </form>
+    </div>
+
     <a href="meals?action=create">Add Meal</a>
     <hr/>
     <table border="1" cellpadding="8" cellspacing="0">
@@ -48,6 +82,7 @@
             </tr>
         </c:forEach>
     </table>
+    <p><b>${warning}</b></p>
 </section>
 </body>
 </html>

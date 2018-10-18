@@ -7,15 +7,18 @@ import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealWithExceed;
-
-
+import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 import static ru.javawebinar.topjava.util.MealsUtil.getWithExceeded;
 import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 import static ru.javawebinar.topjava.web.SecurityUtil.authUserCaloriesPerDay;
+import static ru.javawebinar.topjava.util.DateTimeUtil.isBetween;
 
 @Controller
 public class MealRestController {
@@ -28,6 +31,33 @@ public class MealRestController {
         log.info("getAll (DTO)");
         List<Meal> mealList = service.getAll(authUserId());
         return getWithExceeded(mealList, authUserCaloriesPerDay());
+    }
+
+    public List<MealWithExceed> getFiltered(HttpServletRequest request) {
+        log.info("getFiltered");
+
+        LocalDate fromDate = request.getParameter("fromDate").isEmpty() ?
+                null : LocalDate.parse(request.getParameter("fromDate"));
+
+        LocalDate toDate = request.getParameter("toDate").isEmpty() ?
+                null : LocalDate.parse(request.getParameter("toDate"));
+
+        LocalTime fromTime = request.getParameter("fromTime").isEmpty() ?
+                null : LocalTime.parse(request.getParameter("fromTime"));
+
+        LocalTime toTime = request.getParameter("toTime").isEmpty() ?
+                null : LocalTime.parse(request.getParameter("toTime"));
+
+        List<Meal> mealList = service.getFiltered(authUserId(),
+                fromDate != null ? fromDate : LocalDate.MIN,
+                toDate != null ? toDate : LocalDate.MAX);
+
+        List<MealWithExceed> mealWithExceeds = getWithExceeded(mealList, authUserCaloriesPerDay());
+        return mealWithExceeds.stream()
+                .filter(mealWithExceed -> isBetween(mealWithExceed.getTime(),
+                        fromTime != null ? fromTime : LocalTime.MIN,
+                        toTime != null ? toTime : LocalTime.MAX))
+                .collect(Collectors.toList());
     }
 
     public Meal get(int id) {

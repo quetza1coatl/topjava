@@ -1,7 +1,6 @@
 package ru.javawebinar.topjava.model;
 
 import ru.javawebinar.topjava.web.SecurityUtil;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
