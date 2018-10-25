@@ -34,4 +34,4 @@ CREATE TABLE meals
   user_id INTEGER,
   FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
   CONSTRAINT dataTime_meals_idx UNIQUE (dateTime)
- );
+   );
