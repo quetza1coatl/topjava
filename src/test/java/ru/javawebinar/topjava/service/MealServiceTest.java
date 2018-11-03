@@ -13,7 +13,10 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Arrays;
+import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
@@ -36,7 +39,8 @@ public class MealServiceTest {
     @Test
     public void delete() throws Exception {
         service.delete(MEAL1_ID, USER_ID);
-        assertMatch(service.getAll(USER_ID), MEAL6, MEAL5, MEAL4, MEAL3, MEAL2);
+        List expected = Arrays.asList(MEAL6, MEAL5, MEAL4, MEAL3, MEAL2);
+        assertMatch(service.getAll(USER_ID), expected, "user");
     }
 
     @Test(expected = NotFoundException.class)
@@ -48,13 +52,14 @@ public class MealServiceTest {
     public void create() throws Exception {
         Meal created = getCreated();
         service.create(created, USER_ID);
-        assertMatch(service.getAll(USER_ID), created, MEAL6, MEAL5, MEAL4, MEAL3, MEAL2, MEAL1);
+        List expected = Arrays.asList(created, MEAL6, MEAL5, MEAL4, MEAL3, MEAL2, MEAL1);
+        assertMatch(service.getAll(USER_ID), expected, "user");
     }
 
     @Test
     public void get() throws Exception {
         Meal actual = service.get(ADMIN_MEAL_ID, ADMIN_ID);
-        assertMatch(actual, ADMIN_MEAL1);
+        assertThat(actual).isEqualToIgnoringGivenFields(ADMIN_MEAL1, "user");
     }
 
     @Test(expected = NotFoundException.class)
@@ -76,13 +81,14 @@ public class MealServiceTest {
 
     @Test
     public void getAll() throws Exception {
-        assertMatch(service.getAll(USER_ID), MEALS);
+        assertMatch(service.getAll(USER_ID), MEALS, "user");
     }
 
     @Test
     public void getBetween() throws Exception {
+        List expected = Arrays.asList(MEAL3, MEAL2, MEAL1);
         assertMatch(service.getBetweenDates(
                 LocalDate.of(2015, Month.MAY, 30),
-                LocalDate.of(2015, Month.MAY, 30), USER_ID), MEAL3, MEAL2, MEAL1);
+                LocalDate.of(2015, Month.MAY, 30), USER_ID), expected, "user");
     }
 }
