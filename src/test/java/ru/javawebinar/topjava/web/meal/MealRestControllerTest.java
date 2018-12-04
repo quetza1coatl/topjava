@@ -10,8 +10,6 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.SecurityUtil;
 import ru.javawebinar.topjava.web.json.JsonUtil;
-
-import java.time.LocalDateTime;
 import java.time.Month;
 
 import static java.time.LocalDateTime.of;
@@ -89,7 +87,7 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
     @Test
     void testGetBetween() throws Exception {
-        mockMvc.perform(get(REST_URL + "/filter" + "?startDateTime=2015-05-31T10:15:30&endDateTime=2015-05-31T22:00:00"))
+        mockMvc.perform(get(REST_URL + "/filter" + "?startDate=2015-05-31&startTime=11:00:00&endDate=2015-05-31&endTime=22:00:00"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(contentJson(MEAL6, MEAL5));
