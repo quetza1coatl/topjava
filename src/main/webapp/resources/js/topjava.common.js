@@ -1,6 +1,6 @@
 function makeEditable() {
     $(".delete").click(function () {
-        deleteRow($(this).attr("id"));
+        deleteRow($(this).closest("tr").attr("id"));
     });
 
     $(document).ajaxError(function (event, jqXHR, options, jsExc) {
@@ -57,6 +57,7 @@ function closeNoty() {
 function successNoty(text) {
     closeNoty();
     new Noty({
+        theme: 'sunset',
         text: "<span class='fa fa-lg fa-check'></span> &nbsp;" + text,
         type: 'success',
         layout: "bottomRight",
