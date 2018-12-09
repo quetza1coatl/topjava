@@ -1,7 +1,22 @@
 const ajaxUrl = "ajax/admin/users/";
 let datatableApi;
 
-// $(document).ready(function () {
+function enabled(checkbox, id){
+    const enabled=checkbox.is(":checked");
+    $.ajax({
+        url: ajaxUrl+id,
+        type: "POST",
+        data: "enabled="+enabled
+    }).done(
+        checkbox.closest("tr").attr("is_user_enabled", enabled)
+    );
+
+
+
+
+
+}
+
 $(function () {
     datatableApi = $("#datatable").DataTable({
         "paging": false,

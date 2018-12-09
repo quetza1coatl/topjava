@@ -31,12 +31,15 @@
             </thead>
             <c:forEach items="${users}" var="user">
                 <jsp:useBean id="user" type="ru.javawebinar.topjava.model.User"/>
-                <tr id="${user.id}">
+                <!--В HTML5 для любого элемента можно использовать собственные атрибуты, начинающиеся с префикса data-.
+                Это позволяет хранить разную информацию, которая может помочь в работе скриптов, а также для оформления элементов через CSS. -->
+                <tr id="${user.id}" data-is_user_enabled="${user.enabled}">
+
                     <td><c:out value="${user.name}"/></td>
                     <td><a href="mailto:${user.email}">${user.email}</a></td>
                     <td>${user.roles}</td>
                     <td><input type="checkbox"
-                               <c:if test="${user.enabled}">checked</c:if> id="${user.id}"/></td>
+                               <c:if test="${user.enabled}">checked</c:if> onclick="enabled($(this), ${user.id})"/></td>
                     <td><fmt:formatDate value="${user.registered}" pattern="dd-MMMM-yyyy"/></td>
                     <td><a><span class="fa fa-pencil"></span></a></td>
                     <td><a class="delete"><span class="fa fa-remove"></span></a></td>

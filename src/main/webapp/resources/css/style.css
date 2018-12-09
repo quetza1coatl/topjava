@@ -26,6 +26,13 @@ tr[data-mealExcess="true"] {
 .fa {
     cursor: pointer;
 }
+/**Устанавливает стиль для элемента в том случае, если задано определённое значение специфичного атрибута.
+[атрибут="значение"] { Описание правил стиля }
+E[атрибут="значение"] { Описание правил стиля }*/
+tr[is_user_enabled="false"]{
+    color:lightgray;
+
+}
 
 /*https://getbootstrap.com/docs/4.0/examples/sticky-footer/sticky-footer.css*/
 html {
