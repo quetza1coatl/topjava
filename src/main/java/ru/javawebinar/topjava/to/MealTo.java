@@ -1,19 +1,38 @@
 package ru.javawebinar.topjava.to;
 
+import org.hibernate.validator.constraints.Range;
+import org.springframework.beans.factory.annotation.Value;
+
+import javax.validation.constraints.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class MealTo extends BaseTo {
+public class MealTo extends BaseTo implements Serializable {
+    private static final long serialVersionUID = 1L;
 
+    @NotNull
     private LocalDateTime dateTime;
 
+    @NotBlank
+    @Size(min = 2, max = 120, message = "length must between 2 and 120 characters")
     private String description;
 
-    private int calories;
+    @Range(min = 10, max = 5000)
+    @NotNull
+    private Integer calories;
 
     private boolean excess;
 
     public MealTo() {
+    }
+
+    public MealTo(Integer id, LocalDateTime dateTime, String description, int calories) {
+        super(id);
+        this.dateTime = dateTime;
+        this.description = description;
+        this.calories = calories;
+
     }
 
     public MealTo(Integer id, LocalDateTime dateTime, String description, int calories, boolean excess) {
@@ -32,7 +51,7 @@ public class MealTo extends BaseTo {
         return description;
     }
 
-    public int getCalories() {
+    public Integer getCalories() {
         return calories;
     }
 
@@ -40,12 +59,28 @@ public class MealTo extends BaseTo {
         return excess;
     }
 
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setCalories(Integer calories) {
+        this.calories = calories;
+    }
+
+    public void setExcess(boolean excess) {
+        this.excess = excess;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MealTo that = (MealTo) o;
-        return calories == that.calories &&
+        return calories.equals(that.calories) &&
                 excess == that.excess &&
                 Objects.equals(id, that.id) &&
                 Objects.equals(dateTime, that.dateTime) &&

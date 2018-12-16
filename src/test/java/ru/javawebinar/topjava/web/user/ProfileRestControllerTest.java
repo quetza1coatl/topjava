@@ -56,4 +56,6 @@ class ProfileRestControllerTest extends AbstractControllerTest {
 
         assertMatch(userService.getByEmail("newemail@ya.ru"), UserUtil.updateFromTo(new User(USER), updatedTo));
     }
+
+
 }
