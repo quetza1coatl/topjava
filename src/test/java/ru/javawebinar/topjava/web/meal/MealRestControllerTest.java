@@ -97,6 +97,29 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void testCreateWithInvalidData() throws Exception {
+        Meal invalid = getCreated();
+        invalid.setDescription("d");
+        mockMvc.perform(post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(invalid))
+                .with(userHttpBasic(ADMIN)))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void testUpdateWithInvalidData() throws Exception {
+        Meal invalid = new Meal(MEAL1_ID, MEAL1.getDateTime(), null, 1);
+        mockMvc.perform(put(REST_URL + MEAL1_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(invalid))
+                .with(userHttpBasic(USER)))
+                .andExpect(status().isUnprocessableEntity());
+
+
+    }
+
+    @Test
     void testGetAll() throws Exception {
         mockMvc.perform(get(REST_URL)
                 .with(userHttpBasic(USER)))

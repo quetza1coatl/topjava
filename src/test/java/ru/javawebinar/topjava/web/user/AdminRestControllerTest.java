@@ -112,6 +112,27 @@ class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void testCreateWithInvalidData() throws Exception {
+        User invalid = new User(null, "Invalid", null, "p", 2300, Role.ROLE_USER, Role.ROLE_ADMIN);
+        mockMvc.perform(post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(ADMIN))
+                .content(jsonWithPassword(invalid, "p")))
+                .andExpect(status().isUnprocessableEntity());
+    }
+    @Test
+    void testUpdateWithInvalidData() throws Exception {
+        User invalid = new User(USER_ID, "InvalidUpdate", null, "p", 2, Role.ROLE_USER);
+        mockMvc.perform(put(REST_URL + USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(ADMIN))
+                .content(jsonWithPassword(invalid, "p")))
+                .andExpect(status().isUnprocessableEntity());
+
+
+    }
+
+    @Test
     void testGetAll() throws Exception {
         TestUtil.print(mockMvc.perform(get(REST_URL)
                 .with(userHttpBasic(ADMIN)))

@@ -7,6 +7,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +22,7 @@ import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
+
 
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 
@@ -46,13 +50,32 @@ public class ExceptionInfoHandler {
         return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
     }
 
+    @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)  // 422
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ErrorInfo validationRestError(HttpServletRequest req, MethodArgumentNotValidException e) {
+        return logAndGetValidationErrorInfo(req, e.getBindingResult(), VALIDATION_ERROR);
+    }
+
+    @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)  // 422
+    @ExceptionHandler(BindException.class)
+    public ErrorInfo validationAjaxError(HttpServletRequest req, BindingResult bindingResult) {
+        return logAndGetValidationErrorInfo(req, bindingResult, VALIDATION_ERROR);
+    }
+
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ErrorInfo handleError(HttpServletRequest req, Exception e) {
         return logAndGetErrorInfo(req, e, true, APP_ERROR);
     }
 
-//    https://stackoverflow.com/questions/538870/should-private-helper-methods-be-static-if-they-can-be-static
+    private static ErrorInfo logAndGetValidationErrorInfo(HttpServletRequest req, BindingResult bindingResult, ErrorType errorType) {
+        String errors = ValidationUtil.getErrorsFromBindingResult(bindingResult);
+        log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), errors);
+
+        return new ErrorInfo(req.getRequestURL(), errorType, errors);
+    }
+
+    //    https://stackoverflow.com/questions/538870/should-private-helper-methods-be-static-if-they-can-be-static
     private static ErrorInfo logAndGetErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType) {
         Throwable rootCause = ValidationUtil.getRootCause(e);
         if (logException) {

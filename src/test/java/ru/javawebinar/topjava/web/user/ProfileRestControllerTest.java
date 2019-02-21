@@ -74,4 +74,24 @@ class ProfileRestControllerTest extends AbstractControllerTest {
 
         assertMatch(userService.getByEmail("newemail@ya.ru"), UserUtil.updateFromTo(new User(USER), updatedTo));
     }
+
+
+    @Test
+    void testRegisterWithInvalidData() throws Exception {
+        UserTo invalid = new UserTo(null, "newName", null, "newPassword", 100500);
+
+        mockMvc.perform(post(REST_URL + "/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(invalid)))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void testUpdateWithInvalidData() throws Exception {
+        UserTo invalid = new UserTo(null, "newName", null, "1", 1);
+        mockMvc.perform(put(REST_URL).contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(USER))
+                .content(JsonUtil.writeValue(invalid)))
+                .andExpect(status().isUnprocessableEntity());
+    }
 }
