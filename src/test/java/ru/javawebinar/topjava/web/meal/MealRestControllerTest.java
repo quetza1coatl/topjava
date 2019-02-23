@@ -5,8 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
+import ru.javawebinar.topjava.util.exception.ErrorType;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
@@ -79,6 +82,22 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isNoContent());
 
         assertMatch(service.get(MEAL1_ID, START_SEQ), updated);
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void testCreateWithExistingDate() throws Exception {
+        Meal created = MEAL1;
+        created.setId(null);
+        mockMvc.perform(post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(created))
+                .with(userHttpBasic(USER)))
+                .andDo(print())
+                .andExpect(status().isConflict())
+                .andExpect(content().string("{\"url\":\"http://localhost/rest/profile/meals/\",\"type\":\"DATA_ERROR\",\"detail\":\"Meal with this date already exists\"}"));
+
+
     }
 
     @Test

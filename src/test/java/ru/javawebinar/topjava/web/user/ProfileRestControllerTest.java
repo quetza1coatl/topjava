@@ -3,6 +3,8 @@ package ru.javawebinar.topjava.web.user;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.TestUtil;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.to.UserTo;
@@ -75,6 +77,31 @@ class ProfileRestControllerTest extends AbstractControllerTest {
         assertMatch(userService.getByEmail("newemail@ya.ru"), UserUtil.updateFromTo(new User(USER), updatedTo));
     }
 
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void testRegisterWithExistingMail() throws Exception {
+        UserTo createdTo = new UserTo(null, "newName", "admin@gmail.com", "newPassword", 1500);
+
+        mockMvc.perform(post(REST_URL + "/register").contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(createdTo)))
+                .andDo(print())
+                .andExpect(status().isConflict());
+
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void testUpdateWithExistingMail() throws Exception {
+        UserTo updatedTo = new UserTo(null, "newName", "admin@gmail.com", "newPassword", 1500);
+
+        mockMvc.perform(put(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(USER))
+                .content(JsonUtil.writeValue(updatedTo)))
+                .andDo(print())
+                .andExpect(status().isConflict());
+
+    }
 
     @Test
     void testRegisterWithInvalidData() throws Exception {

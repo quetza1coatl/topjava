@@ -3,6 +3,8 @@ package ru.javawebinar.topjava.web.user;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.TestUtil;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
@@ -89,7 +91,8 @@ class AdminRestControllerTest extends AbstractControllerTest {
         mockMvc.perform(put(REST_URL + USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(ADMIN))
-                .content(JsonUtil.writeValue(updated)))
+                .content(JsonUtil.writeValue(updated))
+                .content(jsonWithPassword(updated, updated.getPassword())))
                 .andExpect(status().isNoContent());
 
         assertMatch(userService.get(USER_ID), updated);
@@ -112,6 +115,30 @@ class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void testCreateWithExistingMail() throws Exception {
+        User failed = new User(null, "New", "admin@gmail.com", "newPass", 2300, Role.ROLE_USER, Role.ROLE_ADMIN);
+        mockMvc.perform(post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(ADMIN))
+                .content(jsonWithPassword(failed, "newPass")))
+                .andExpect(status().isConflict());
+
+    }
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void testUpdateWithExistingMail() throws Exception {
+        User updated = new User(ADMIN);
+        updated.setEmail("user@yandex.ru");
+        mockMvc.perform(put(REST_URL + ADMIN_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(ADMIN))
+                .content(JsonUtil.writeValue(updated))
+                .content(jsonWithPassword(updated, updated.getPassword())))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
     void testCreateWithInvalidData() throws Exception {
         User invalid = new User(null, "Invalid", null, "p", 2300, Role.ROLE_USER, Role.ROLE_ADMIN);
         mockMvc.perform(post(REST_URL)
@@ -120,6 +147,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .content(jsonWithPassword(invalid, "p")))
                 .andExpect(status().isUnprocessableEntity());
     }
+
     @Test
     void testUpdateWithInvalidData() throws Exception {
         User invalid = new User(USER_ID, "InvalidUpdate", null, "p", 2, Role.ROLE_USER);

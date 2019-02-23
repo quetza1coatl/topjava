@@ -56,7 +56,7 @@ public class RootController extends AbstractUserController {
                 status.setComplete();
                 return "redirect:meals";
             } catch (DataIntegrityViolationException e) {
-                result.rejectValue("email", "exception.duplicateMail");
+                result.rejectValue("email", "exception.users.duplicate_email");
                 return "profile";
             }
 
@@ -83,7 +83,7 @@ public class RootController extends AbstractUserController {
                 status.setComplete();
                 return "redirect:login?message=app.registered&username=" + userTo.getEmail();
             } catch (DataIntegrityViolationException e) {
-                result.rejectValue("email", "exception.duplicateMail");
+                result.rejectValue("email", "exception.users.duplicate_email");
                 return "profile";
             }
 
